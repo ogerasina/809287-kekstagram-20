@@ -14,6 +14,11 @@ var pictureTemplate = document.querySelector('#picture')
   .content
   .querySelector('.picture');
 var similarListElement = document.querySelector('.pictures');
+var firstPicture = document.querySelector('.big-picture');
+var commentTemplate = document.querySelector('#comment')
+  .content
+  .querySelector('.social__comment');
+var commentsListElement = document.querySelector('.social__comments');
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -68,12 +73,44 @@ var renderPictures = function (picture) {
   pictureElement.querySelector('.picture__comments').textContent = picture.commentsNumber;
   pictureElement.querySelector('.picture__likes').textContent = picture.likes;
 
-
   return pictureElement;
+};
+
+var renderComments = function (comment) {
+  var commentElement = commentTemplate.cloneNode(true);
+
+  commentElement.querySelector('.social__picture').src = comment.avatar;
+  commentElement.querySelector('.social__picture').alt = comment.name;
+  commentElement.querySelector('.social__text').textContent = comment.message;
+
+  return commentElement;
+};
+
+var createCommentFragment = function (comments) {
+  var commentFragment = document.createDocumentFragment();
+  for (var l = 0; l < comments.length; l++) {
+    commentFragment.appendChild(renderComments(comments[l]));
+  }
+  commentsListElement.appendChild(commentFragment);
+};
+
+var renderBigImage = function (picture) {
+  firstPicture.querySelector('.big-picture__img').children[0].src = picture.url;
+  firstPicture.querySelector('.comments-count').textContent = picture.commentsNumber;
+  firstPicture.querySelector('.likes-count').textContent = picture.likes;
+  firstPicture.querySelector('.social__caption').textContent = picture.message;
+
+  createCommentFragment(picture.comments);
+
+  return picture;
 };
 
 var fragment = document.createDocumentFragment();
 for (var j = 0; j < cards.length; j++) {
-  fragment.appendChild(renderPictures(cards[j]));
+  if (j === 0) {
+    renderBigImage(cards[j]);
+  } else {
+    fragment.appendChild(renderPictures(cards[j]));
+  }
 }
 similarListElement.appendChild(fragment);
