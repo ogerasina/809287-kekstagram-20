@@ -71,19 +71,15 @@ var createCollectionMap = function (messages, names) {
 };
 
 var getPictures = function () {
-  // var pictures = [];
   var picture = {};
   for (var i = 0; i < 24; i++) {
     picture = createCollectionMap(MESSAGES_ARRAY, NAMES_ARRAY);
-    // console.log(picture);
   }
-  // pictures.push(picture);
   return picture;
 };
 
 var arrRenderPictures = getPictures();
 
-// console.log(arrRenderPictures);
 var renderPictures = function (picture) {
   var pictureElement = pictureTemplate.cloneNode(true);
 
