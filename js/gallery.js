@@ -1,58 +1,41 @@
 'use strict';
 (function () {
-  var MESSAGES_ARRAY = [
-    'Всё отлично!',
-    'В целом всё неплохо. Но не всё.',
-    'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
-    'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-    'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-    'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
-  ];
-  var NAMES_ARRAY = ['Иван', 'Степан', 'Юлия', 'Катя', 'Маша', 'Василиса', 'Эмилия', 'Женя'];
+  var pictureTemplate = document.querySelector('#picture')
+    .content
+    .querySelector('.picture');
+  var similarListElement = document.querySelector('.pictures');
+  var bigPicture = document.querySelector('.big-picture');
+  var commentsListElement = document.querySelector('.social__comments');
 
-  var cards = [];
+  var renderPictures = function (picture) {
+    var pictureElement = pictureTemplate.cloneNode(true);
 
-  var numbersArray = window.utils.createArrayOfNumbers(1, 25);
+    pictureElement.querySelector('.picture__img').src = picture.url;
+    pictureElement.querySelector('.picture__comments').textContent = picture.commentsNumber;
+    pictureElement.querySelector('.picture__likes').textContent = picture.likes;
 
-  var createCollectionMap = function (messages, names) {
-    var element = {};
-
-    var randomIndex = window.utils.getRandomInt(0, numbersArray.length - 1);
-    var randomNumber = numbersArray[randomIndex];
-    numbersArray.splice(randomIndex, 1);
-
-    element.url = 'photos/' + randomNumber + '.jpg';
-    element.description = 'Тут очень красивая фотография!';
-    element.likes = window.utils.getRandomInt(15, 200);
-    element.commentsNumber = window.utils.getRandomInt(1, 2);
-    element.comments = [];
-
-    for (var k = 0; k < element.commentsNumber; k++) {
-      var comment = {};
-
-      comment.avatar = 'img/avatar-' + window.utils.getRandomInt(1, 6) + '.svg';
-      comment.message = messages[window.utils.getRandomInt(0, messages.length - 1)];
-      comment.name = names[window.utils.getRandomInt(0, names.length - 1)];
-
-      element.comments.push(comment);
+    return pictureElement;
+  };
+  var renderGallery = function (pictures) {
+    var fragment = document.createDocumentFragment();
+    for (var j = 0; j < 25; j++) {
+      fragment.appendChild(renderPictures(pictures[j]));
     }
 
-    cards.push(element);
-    return cards;
+    similarListElement.appendChild(fragment);
   };
 
-  var getPictures = function () {
-    var picture = {};
-    for (var i = 0; i < 24; i++) {
-      picture = createCollectionMap(MESSAGES_ARRAY, NAMES_ARRAY);
-    }
-    return picture;
-  };
-
-  var arrRenderPictures = getPictures();
-
-  window.gallery = {
-    arrRenderPictures: arrRenderPictures,
-    cards: cards
-  };
+  window.backend.load(function (response) {
+    renderGallery(response);
+    window.renderBigPicture = function (currentIndex) {
+      bigPicture.querySelector('.big-picture__img img').src = response[currentIndex].url;
+      bigPicture.querySelector('.likes-count').textContent = response[currentIndex].likes;
+      bigPicture.querySelector('.comments-count').textContent = response[currentIndex].comments.length;
+      bigPicture.querySelector('.social__caption').textContent = response[currentIndex].description;
+      bigPicture.querySelector('.social__comment-count').classList.add('hidden');
+      bigPicture.querySelector('.comments-loader').classList.add('hidden');
+      commentsListElement.innerHTML = '';
+      window.preview.createCommentFragment(response[currentIndex].comments);
+    };
+  });
 })();

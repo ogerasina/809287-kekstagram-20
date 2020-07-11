@@ -26,32 +26,7 @@
   };
 
   var pictureCancel = document.querySelector('#picture-cancel');
-  var thumbPictures = similarListElement.querySelectorAll('.picture img');
 
-  var renderBigImage = function (picture) {
-    bigPicture.querySelector('.big-picture__img').children[0].src = picture.url;
-    bigPicture.querySelector('.comments-count').textContent = picture.commentsNumber;
-    bigPicture.querySelector('.likes-count').textContent = picture.likes;
-    bigPicture.querySelector('.social__caption').textContent = picture.message;
-
-    var getIndexOfPic = function () {
-      for (var n = 0; n < thumbPictures.length; n++) {
-        if (picture === thumbPictures[n]) {
-          var numberOfPic = n;
-        }
-      }
-      return numberOfPic;
-    };
-    var numberOfPic = getIndexOfPic();
-    bigPicture.querySelector('.big-picture__img img').src = window.gallery.arrRenderPictures[numberOfPic].url;
-    bigPicture.querySelector('.likes-count').textContent = window.gallery.arrRenderPictures[numberOfPic].likes;
-    bigPicture.querySelector('.comments-count').textContent = window.gallery.arrRenderPictures[numberOfPic].comments.length;
-    bigPicture.querySelector('.social__caption').textContent = window.gallery.arrRenderPictures[numberOfPic].description;
-    bigPicture.querySelector('.social__comment-count').classList.add('hidden');
-    bigPicture.querySelector('.comments-loader').classList.add('hidden');
-    commentsListElement.innerHTML = '';
-    createCommentFragment(window.gallery.arrRenderPictures[numberOfPic].comments);
-  };
   var onPicturePopupEscPress = function (evt) {
     if (evt.key === 'Escape') {
       evt.preventDefault();
@@ -59,7 +34,17 @@
     }
   };
   var openPicture = function (current) {
-    renderBigImage(current);
+    var thumbPictures = similarListElement.querySelectorAll('.picture img');
+    var getIndexOfPic = function () {
+      for (var n = 0; n < thumbPictures.length; n++) {
+        if (current === thumbPictures[n]) {
+          var currentIndex = n;
+        }
+      }
+      return currentIndex;
+    };
+    var currentIndex = getIndexOfPic();
+    window.renderBigPicture(currentIndex);
     bigPicture.classList.remove('hidden');
     document.querySelector('body').classList.add('modal-open');
     document.addEventListener('keydown', onPicturePopupEscPress);
@@ -108,4 +93,7 @@
       socialFooterText.setCustomValidity('');
     }
   });
+  window.preview = {
+    createCommentFragment: createCommentFragment
+  };
 })();
