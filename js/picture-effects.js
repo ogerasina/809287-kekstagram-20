@@ -16,13 +16,10 @@
 
   var imgUploadEffectLevel = document.querySelector('.img-upload__effect-level');
   var getLevelPin = function () {
-    var levelDepthWidth = effectLevelDepth.offsetWidth;
-    var levelFullWidth = effectLevelLine.offsetWidth;
-    var percentage = Math.round(100 * levelDepthWidth / levelFullWidth);
-
+    var positionX = effectLevelPin.offsetLeft;
+    var effectLevelLineWidth = effectLevelLine.offsetWidth;
+    var percentage = Math.round(100 * positionX / effectLevelLineWidth);
     effectLevelValue.value = percentage;
-    effectLevelPin.style.left = percentage + '%';
-    effectLevelDepth.style.width = percentage + '%';
 
     return percentage;
   };
@@ -70,6 +67,7 @@
     var current = document.querySelector('.effects__radio:checked');
     getFilterValue(current.value, getLevelPin());
   };
+
   effectLevelPin.addEventListener('mouseup', changeFilterValue);
 
   // Scale Image
@@ -106,4 +104,8 @@
   scaleControlSmaller.addEventListener('click', scaleImageSmaller);
 
   scaleControlBigger.addEventListener('click', scaleImageBigger);
+
+  window.pictureEffects = {
+    changeFilterValue: changeFilterValue
+  };
 })();
